@@ -1,5 +1,7 @@
 package org.hackillinios.studentplanner;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -22,18 +24,26 @@ public class HomeworkList extends ActionBarActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_homework_list);
         initDrawer();
+
+        Fragment fragment = new AssignmentFragment();
+        getSupportActionBar().setTitle("Assignments");
+        FragmentManager manager = getFragmentManager();
+        manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
     }
 
     private void initDrawer() {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         drawerList = (ListView) findViewById(R.id.list_slidermenu);
+        String[] list = {"Assignments, Classes, Upcoming, Profile, Settings"};
 
-        //drawerList.setAdapter(new DrawerCustomAdapter(this, groupItem, childItem));
+        drawerList.setAdapter(new DrawerCustomAdapter(this, list));
 
         drawerList.setOnClickListener(this);
-        //drawer.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
+        drawer.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawer.setScrimColor(Color.TRANSPARENT);
 
         setSupportActionBar(toolbar);
@@ -64,6 +74,37 @@ public class HomeworkList extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        Fragment fragment = null;
+        switch(drawerList.getPositionForView(v)){
+            case 0:
+                   fragment = new AssignmentFragment();
+                   getSupportActionBar().setTitle("Assignments");
+                break;
 
+            case 1:
+                //fragment = new ClassesFragment();
+                getSupportActionBar().setTitle("Classes");
+                break;
+
+            case 2:
+                //fragment = new UpcomingFragment():
+                getSupportActionBar().setTitle("Upcoming");
+                break;
+
+            case 3:
+                //fragment = new ProfileFragment();
+                getSupportActionBar().setTitle("Profile");
+                break;
+
+            case 4:
+                //fragment = new SettingsFragment();
+                getSupportActionBar().setTitle("Settings");
+                break;
+        }
+        if(fragment != null){
+            FragmentManager manager = getFragmentManager();
+            manager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+            drawer.closeDrawer(drawerList);
+        }
     }
 }
