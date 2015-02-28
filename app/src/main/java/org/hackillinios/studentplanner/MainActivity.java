@@ -150,8 +150,8 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean aBoolean) {
             dialog.dismiss();
             if(aBoolean){
-                //Intent i = new Intent(MainActivity.this, HomeworkList.class);
-               // startActivity(i);
+                Intent i = new Intent(MainActivity.this, HomeworkList.class);
+                startActivity(i);
             }else{
                 Toast t = Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT);
                 t.show();
@@ -227,8 +227,8 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean aBoolean) {
             dialog.dismiss();
             if(aBoolean){
-                //Intent i = new Intent(MainActivity.this, AddClasses.class);
-                //startActivity(i);
+                Intent i = new Intent(MainActivity.this, HomeworkList.class);
+                startActivity(i);
             }else{
                 Toast t = Toast.makeText(MainActivity.this, "Registration Failed!", Toast.LENGTH_SHORT);
                 t.show();
