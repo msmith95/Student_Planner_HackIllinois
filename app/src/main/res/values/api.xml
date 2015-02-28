@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login">http://hack-illinois-2015.appspot.com/login.php</string>
+    <string name="register">http://hack-illinois-2015.appspot.com/register.php</string>
+</resources>

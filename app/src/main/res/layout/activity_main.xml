@@ -4,13 +4,59 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
-    android:background="#0099CC">
+    android:background="#33B5E5">
 
     <EditText
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:layout_height="35dp"
+        android:id="@+id/etEmail"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp" />
+        android:layout_marginTop="100dp"
+        android:textColor="#000"
+        android:hint="Email" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/etPassword"
+        android:layout_marginTop="34dp"
+        android:textColor="#000"
+        android:hint="Password"
+        android:layout_below="@+id/etEmail"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <CheckBox
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="I am a new user"
+        android:id="@+id/cbNewUser"
+        android:textColor="#000"
+        android:textSize="15sp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:checked="false" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login/Register"
+        android:id="@+id/bLogin"
+        android:layout_below="@+id/cbNewUser"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Please login/register below"
+        android:id="@+id/tvMain"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="38dp" />
 </RelativeLayout>
