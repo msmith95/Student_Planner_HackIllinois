@@ -37,7 +37,7 @@ public class HomeworkList extends ActionBarActivity implements View.OnClickListe
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         drawerList = (ListView) findViewById(R.id.list_slidermenu);
-        String[] list = {"Assignments, Classes, Upcoming, Profile, Settings"};
+        String[] list = {"Assignments, Classes, Upcoming, Settings"};
 
         drawerList.setAdapter(new DrawerCustomAdapter(this, list));
 
@@ -92,11 +92,6 @@ public class HomeworkList extends ActionBarActivity implements View.OnClickListe
                 break;
 
             case 3:
-                //fragment = new ProfileFragment();
-                getSupportActionBar().setTitle("Profile");
-                break;
-
-            case 4:
                 //fragment = new SettingsFragment();
                 getSupportActionBar().setTitle("Settings");
                 break;
