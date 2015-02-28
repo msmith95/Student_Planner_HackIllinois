@@ -14,6 +14,7 @@ public class Assignments {
     private UUID id;
     private Calendar dueDate, reminderDate;
     private DateFormat df;
+    private Boolean complete;
 
 
     void setTitle(String aTitle){
@@ -50,6 +51,10 @@ public class Assignments {
         this.type = type;
     }
 
+    void setComplete(Boolean complete){
+        this.complete = complete;
+    }
+
     void setAll(String aTitle, String aClass, String descrip, String type, Date d1, Date d2){
         setTitle(aTitle);
         setClassA(aClass);
@@ -58,6 +63,7 @@ public class Assignments {
         setDueDate(d1);
         setReminderDate(d2);
         setUUID();
+        setComplete(false);
     }
 
     String getTitle(){
@@ -86,5 +92,9 @@ public class Assignments {
 
     String getType(){
         return this.type;
+    }
+
+    Boolean getComplete(){
+        return this.complete;
     }
 }

@@ -1,6 +1,9 @@
 package org.hackillinios.studentplanner;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -9,7 +12,10 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -40,7 +46,10 @@ public class AssignmentFragment extends android.app.Fragment {
     HttpPost post;
     HttpResponse response;
     JSONObject json, json2;
+    Assignments[] array;
+    ArrayAdapter<Assignments> adapter;
     private fetchAssignmentsTaskFromNet fetch;
+    int position;
 
     @Nullable
     @Override
@@ -51,11 +60,29 @@ public class AssignmentFragment extends android.app.Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), ViewAssignment.class);
+
+                SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                Gson gson= new Gson();
+                position = assign.getPositionForView(v);
+                String json = gson.toJson(array[position]);
+                editor.putString("assignment", json);
+                editor.commit();
+
                 startActivity(i);
             }
         });
 
         return rootview;
+    }
+
+    @Override
+    public void onResume() {
+       SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+       String json = prefs.getString("assignment", "");
+       Gson gson = new Gson();
+       array[position] = gson.fromJson(json, Assignments.class);
+       adapter.notifyDataSetChanged();
     }
 
     public class fetchAssignmentsTaskFromNet extends AsyncTask<Void, Void, Assignments[]>{
@@ -122,8 +149,10 @@ public class AssignmentFragment extends android.app.Fragment {
         }
 
         @Override
-        protected void onPostExecute(Assignments[] array) {
-            assign.setAdapter(new AssignmentAdapter(getActivity(), array));
+        protected void onPostExecute(Assignments[] array2) {
+            array = array2;
+            adapter = new AssignmentAdapter(getActivity(), array2);
+            assign.setAdapter(adapter);
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.hackillinios.studentplanner;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,12 @@ public class AssignmentAdapter extends ArrayAdapter<Assignments> {
         dueDate.setText(dayOfWeek + " " + month + " " + d);
         classTitle.setText(assignments[position].getTitle());
         type.setText(assignments[position].getType());
-
+        if(assignments[position].getComplete()){
+            title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            dueDate.setPaintFlags(dueDate.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            classTitle.setPaintFlags(classTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            type.setPaintFlags(type.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
 
         return customView;
     }
