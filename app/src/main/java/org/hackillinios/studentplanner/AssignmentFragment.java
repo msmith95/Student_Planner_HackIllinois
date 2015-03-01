@@ -1,5 +1,6 @@
 package org.hackillinios.studentplanner;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,9 @@ import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -49,7 +53,8 @@ public class AssignmentFragment extends android.app.Fragment {
     Assignments[] array;
     ArrayAdapter<Assignments> adapter;
     private fetchAssignmentsTaskFromNet fetch;
-    int position;
+    int position=0;
+    boolean go = false;
 
     @Nullable
     @Override
@@ -69,20 +74,29 @@ public class AssignmentFragment extends android.app.Fragment {
                 editor.putString("assignment", json);
                 editor.commit();
 
-                startActivity(i);
+                startActivityForResult(i, 1);
             }
         });
+
+        fetch = new fetchAssignmentsTaskFromNet();
+        fetch.execute();
 
         return rootview;
     }
 
     @Override
     public void onResume() {
-       SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
-       String json = prefs.getString("assignment", "");
-       Gson gson = new Gson();
-       array[position] = gson.fromJson(json, Assignments.class);
-       adapter.notifyDataSetChanged();
+        if(!go) {
+            SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+            String json = prefs.getString("assignment", "");
+            Gson gson = new Gson();
+            array[position] = gson.fromJson(json, Assignments.class);
+            adapter.notifyDataSetChanged();
+        }else{
+            fetch = new fetchAssignmentsTaskFromNet();
+            fetch.execute();
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public class fetchAssignmentsTaskFromNet extends AsyncTask<Void, Void, Assignments[]>{
@@ -153,6 +167,51 @@ public class AssignmentFragment extends android.app.Fragment {
             array = array2;
             adapter = new AssignmentAdapter(getActivity(), array2);
             assign.setAdapter(adapter);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_assignment_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_new){
+            SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("orNew", 1);
+            editor.commit();
+
+            Intent i = new Intent(getActivity(), EditAssignment.class);
+            startActivityForResult(i, 0);
+        }
+        return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //0 means new assignment 1 means an assignment was edited.
+        switch(requestCode){
+            case 0:
+                if(resultCode == Activity.RESULT_OK){
+                    int temp = data.getIntExtra("result", 1);
+                    if(temp ==0){
+                        go = true;
+                    }
+                }
+
+                break;
+
+            case 1:
+                if(resultCode == Activity.RESULT_OK){
+                    int temp = data.getIntExtra("result", 1);
+                    if(temp == 1){
+                        go = false;
+                    }
+                }
+                break;
         }
     }
 }

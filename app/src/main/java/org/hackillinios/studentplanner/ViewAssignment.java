@@ -1,5 +1,6 @@
 package org.hackillinios.studentplanner;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ public class ViewAssignment extends ActionBarActivity {
         String json = prefs.getString("assignment", "No Assignment");
         Gson gson = new Gson();
         assignment = gson.fromJson(json, Assignments.class);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
 
         title = (TextView)findViewById(R.id.tvViewTitle);
@@ -112,6 +114,11 @@ public class ViewAssignment extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
        if(item.getItemId() == R.id.action_edit){
+           SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
+           SharedPreferences.Editor editor = prefs.edit();
+           editor.putInt("orNew", 0);
+           editor.commit();
+
            Intent i = new Intent(this, EditAssignment.class);
            Bundle bun = new Bundle();
            bun.putString("dDate", dDate);
@@ -120,6 +127,11 @@ public class ViewAssignment extends ActionBarActivity {
            bun.putString("rTime", rTime);
            i.putExtras(bun);
            startActivity(i);
+       }else if(item.getItemId() == android.R.id.home){
+           Intent i = new Intent();
+           i.putExtra("result", 1);
+           setResult(Activity.RESULT_OK, i);
+           finish();
        }
         return true;
     }

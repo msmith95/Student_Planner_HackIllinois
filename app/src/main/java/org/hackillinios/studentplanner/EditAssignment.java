@@ -1,8 +1,10 @@
 package org.hackillinios.studentplanner;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -29,7 +31,7 @@ public class EditAssignment extends ActionBarActivity {
     EditText title, dueDate, dueTime, reminderDate, reminderTime, description;
     Spinner classes;
     Bundle args;
-    int month, day, year;
+    int month, day, year, orNew;
     String tOD;
     LinearLayout ll;
     Calendar due, reminder;
@@ -58,15 +60,21 @@ public class EditAssignment extends ActionBarActivity {
 
         SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
         String json = prefs.getString("assignment", "");
-        Gson g = new Gson();
-        Assignments assign = g.fromJson(json, Assignments.class);
+        orNew = prefs.getInt("orNew", 0);
+        if(orNew == 0) {
+            Gson g = new Gson();
+            Assignments assign = g.fromJson(json, Assignments.class);
 
-        title.setText(assign.getTitle());
-        description.setText(assign.getDescription());
-        dueDate.setText(args.getString("dDate"));
-        dueTime.setText(args.getString("dTime"));
-        reminderDate.setText(args.getString("rDate"));
-        reminderTime.setText(args.getString("rTime"));
+            title.setText(assign.getTitle());
+            description.setText(assign.getDescription());
+            dueDate.setText(args.getString("dDate"));
+            dueTime.setText(args.getString("dTime"));
+            reminderDate.setText(args.getString("rDate"));
+            reminderTime.setText(args.getString("rTime"));
+            getSupportActionBar().setTitle("Edit Assignment");
+        }else{
+            getSupportActionBar().setTitle("Add new assignment");
+        }
 
         dueDate.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_DATE);
         dueTime.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_TIME);
@@ -153,15 +161,26 @@ public class EditAssignment extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_save){
-            Assignments temp = new Assignments();
-            temp.setAll(title.getText().toString(), classes.toString(), description.getText().toString(),due.getTime(), reminder.getTime());
-            SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
+            // 0 means coming from view assignment 1 means from assignment fragment
+            if(orNew == 0) {
+                Assignments temp = new Assignments();
+                temp.setAll(title.getText().toString(), classes.toString(), description.getText().toString(), due.getTime(), reminder.getTime());
+                SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
 
-            Gson g = new Gson();
-            String json = g.toJson(temp, Assignments.class);
-            editor.putString("assignment", json);
-            editor.commit();
+                Gson g = new Gson();
+                String json = g.toJson(temp, Assignments.class);
+                editor.putString("assignment", json);
+                editor.commit();
+                Intent result = new Intent();
+                result.putExtra("result", 1);
+                setResult(Activity.RESULT_OK, result);
+            }else{
+                Intent result = new Intent();
+                result.putExtra("result", 0);
+                //TODO: Add call to upload assignment
+                setResult(Activity.RESULT_OK, result);
+            }
 
             finish();
         }
