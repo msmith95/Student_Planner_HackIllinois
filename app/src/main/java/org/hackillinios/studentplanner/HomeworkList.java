@@ -10,12 +10,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 /**
  * Created by Michael Smith on 2/28/2015.
  */
-public class HomeworkList extends ActionBarActivity implements View.OnClickListener {
+public class HomeworkList extends ActionBarActivity implements AdapterView.OnItemClickListener {
     private DrawerLayout drawer;
     private ListView drawerList;
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -34,6 +35,7 @@ public class HomeworkList extends ActionBarActivity implements View.OnClickListe
     }
 
     private void initDrawer() {
+        toolbar = (Toolbar)findViewById(R.id.mytoolbar);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         drawerList = (ListView) findViewById(R.id.list_slidermenu);
@@ -41,7 +43,7 @@ public class HomeworkList extends ActionBarActivity implements View.OnClickListe
 
         drawerList.setAdapter(new DrawerCustomAdapter(this, list));
 
-        drawerList.setOnClickListener(this);
+        drawerList.setOnItemClickListener(this);
 
         drawer.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawer.setScrimColor(Color.TRANSPARENT);
@@ -73,12 +75,12 @@ public class HomeworkList extends ActionBarActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Fragment fragment = null;
-        switch(drawerList.getPositionForView(v)){
+        switch(position){
             case 0:
-                   fragment = new AssignmentFragment();
-                   getSupportActionBar().setTitle("Assignments");
+                fragment = new AssignmentFragment();
+                getSupportActionBar().setTitle("Assignments");
                 break;
 
             case 1:

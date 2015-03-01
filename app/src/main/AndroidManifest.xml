@@ -25,7 +25,8 @@
             android:label = "Edit Assignments" >
             </activity>
 
-        <activity android:name=".HomeworkList">
+        <activity android:name=".HomeworkList"
+            android:theme="@style/DrawerTheme">
 
         </activity>
 

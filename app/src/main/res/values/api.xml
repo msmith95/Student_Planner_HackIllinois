@@ -2,5 +2,6 @@
 <resources>
     <string name="login">http://hack-illinois-2015.appspot.com/login.php</string>
     <string name="register">http://hack-illinois-2015.appspot.com/register.php</string>
-    <string name="fetch">http://hack-ilinois-2015.appspot.com/fetch.php</string>
+    <string name="fetch">http://hack-illinois-2015.appspot.com/fetch.php</string>
+    <string name="upload">http://hack-illinois-2015.appspot.com/upload.php</string>
 </resources>

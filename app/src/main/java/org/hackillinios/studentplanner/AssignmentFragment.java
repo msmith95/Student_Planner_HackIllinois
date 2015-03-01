@@ -10,12 +10,14 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -38,6 +40,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,22 +58,22 @@ public class AssignmentFragment extends android.app.Fragment {
     ArrayAdapter<Assignments> adapter;
     private fetchAssignmentsTaskFromNet fetch;
     int position=0;
-    boolean go = false;
+    boolean go = true;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_assignment, container, false);
+        setHasOptionsMenu(true);
         assign = (ListView)rootview.findViewById(R.id.lvAssignments);
-        assign.setOnClickListener(new View.OnClickListener() {
+        assign.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity(), ViewAssignment.class);
 
                 SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
-                Gson gson= new Gson();
-                position = assign.getPositionForView(v);
+                Gson gson= new Gson();;
                 String json = gson.toJson(array[position]);
                 editor.putString("assignment", json);
                 editor.commit();
@@ -78,14 +82,12 @@ public class AssignmentFragment extends android.app.Fragment {
             }
         });
 
-        fetch = new fetchAssignmentsTaskFromNet();
-        fetch.execute();
-
         return rootview;
     }
 
     @Override
     public void onResume() {
+        super.onResume();
         if(!go) {
             SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
             String json = prefs.getString("assignment", "");
@@ -95,7 +97,6 @@ public class AssignmentFragment extends android.app.Fragment {
         }else{
             fetch = new fetchAssignmentsTaskFromNet();
             fetch.execute();
-            adapter.notifyDataSetChanged();
         }
     }
 
@@ -107,7 +108,9 @@ public class AssignmentFragment extends android.app.Fragment {
             StrictMode.setThreadPolicy(policy);
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
             ArrayList<Assignments> temp = new ArrayList<>();
-
+            SharedPreferences prefs = getActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+            String user = prefs.getString("user", " ");
+            pairs.add(new BasicNameValuePair("user", user));
 
 
             api = getResources().getString(R.string.fetch);
@@ -151,9 +154,22 @@ public class AssignmentFragment extends android.app.Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                DateFormat df = new SimpleDateFormat("yyyy MM dd HH mm ss");
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 try {
-                    tempA.setAll(json2.getString("title"), json2.getString("class"), json2.getString("description"), df.parse(json2.getString("dueDate")), df.parse("reminderDate"));
+                    String title = json2.getString("title");
+                    String classes = json2.getString("class");
+                    String d = json2.getString("description");
+                    String d1 = json2.getString("dueDate");
+                    String d2 = json2.getString("reminderDate");
+
+                    Log.v("AssignFrag", "Reached line");
+                    tempA.setTitle(json2.getString("title"));
+
+                    Date f = df.parse(d1);
+                    Date f2 = df.parse(d2);
+
+                    tempA.setAll(title,classes,d, f, f2);
+
                 } catch (JSONException | ParseException e) {
                     e.printStackTrace();
                 }
@@ -167,6 +183,7 @@ public class AssignmentFragment extends android.app.Fragment {
             array = array2;
             adapter = new AssignmentAdapter(getActivity(), array2);
             assign.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
     }
 

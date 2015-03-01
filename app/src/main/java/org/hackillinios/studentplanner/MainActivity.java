@@ -99,8 +99,8 @@ public class MainActivity extends ActionBarActivity {
             StrictMode.setThreadPolicy(policy);
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            pairs.add(new BasicNameValuePair("email", mEmail));
-            pairs.add(new BasicNameValuePair("pass", mPassword));
+            pairs.add(new BasicNameValuePair("user", mEmail));
+            pairs.add(new BasicNameValuePair("password", mPassword));
 
             api = getResources().getString(R.string.login);
             client = new DefaultHttpClient();
@@ -185,7 +185,7 @@ public class MainActivity extends ActionBarActivity {
             post = new HttpPost(api);
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            pairs.add(new BasicNameValuePair("email", mEmail));
+            pairs.add(new BasicNameValuePair("user", mEmail));
             pairs.add(new BasicNameValuePair("password", mPassword));
 
             try {

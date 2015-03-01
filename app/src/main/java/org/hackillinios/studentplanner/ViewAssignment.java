@@ -26,7 +26,7 @@ public class ViewAssignment extends ActionBarActivity {
     TextView title, classA, dueDate, description, reminderDate;
     Button complete;
     CheckBox is_complete;
-    Assignments assignment;
+    Assignments assignment = new Assignments();
     String tOD, dDate, dTime, rDate, rTime;
 
     @Override
@@ -45,7 +45,7 @@ public class ViewAssignment extends ActionBarActivity {
 
 
         title = (TextView)findViewById(R.id.tvViewTitle);
-        classA = (TextView)findViewById(R.id.tvClassTitle);
+        classA = (TextView)findViewById(R.id.tvViewClass);
         dueDate = (TextView)findViewById(R.id.tvViewDueDate);
         description = (TextView)findViewById(R.id.tvDescription);
         reminderDate = (TextView)findViewById(R.id.tvViewReminderDate);
@@ -69,6 +69,9 @@ public class ViewAssignment extends ActionBarActivity {
                 String j = g.toJson(assignment);
                 editor.putString("assignment", j);
                 editor.commit();
+                Intent i = new Intent();
+                i.putExtra("result", 1);
+                setResult(Activity.RESULT_OK, i);
                 finish();
             }
         });
@@ -138,6 +141,7 @@ public class ViewAssignment extends ActionBarActivity {
 
     @Override
     protected void onResume() {
+        super.onResume();
         final SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
         String json = prefs.getString("assignment", "No Assignment");
         Gson gson = new Gson();

@@ -1,5 +1,7 @@
 package org.hackillinios.studentplanner;
 
+import android.util.Log;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,52 +12,59 @@ import java.util.UUID;
  * Created by Michael Smith on 2/28/2015.
  */
 public class Assignments {
-    private String title, classA, description, type;
-    private UUID id;
-    private Calendar dueDate, reminderDate;
-    private DateFormat df;
-    private Boolean complete;
+    String title, classA, description, type;
+    UUID id;
+    Calendar dueDate=Calendar.getInstance(), reminderDate=Calendar.getInstance();
+    //DateFormat df=new SimpleDateFormat();
+    Boolean complete;
 
-
-    void setTitle(String aTitle){
-        this.title = aTitle;
+    public Assignments(){
     }
 
-    void setClassA(String aClass){
-        this.classA = aClass;
+    public void setTitle(String aTitle){
+        title = aTitle;
     }
 
-    void setDescription(String descrip){
-        this.description = descrip;
+    public void setClassA(String aClass){
+        classA = aClass;
     }
 
-    void setDueDate(Date date){
-        df = new SimpleDateFormat("yyyy MM dd HH mm ss");
+    public void setDescription(String descrip){
+        description = descrip;
+    }
+
+    public void setDueDate(Date date){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String mDate = df.format(date);
         String[] temp = mDate.split(" ");
-       this.dueDate.set(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), Integer.parseInt(temp[3]), Integer.parseInt(temp[4]), Integer.parseInt(temp[5]));
+        String[] t1 = temp[0].split("-");
+        String[] t2 = temp[1].split(":");
+        dueDate.set(Integer.parseInt(t1[0]), Integer.parseInt(t1[1]), Integer.parseInt(t1[2]), Integer.parseInt(t2[0]), Integer.parseInt(t2[1]), Integer.parseInt(t2[2]));
     }
 
-    void setReminderDate(Date date){
-        df = new SimpleDateFormat("yyyy MM dd HH mm ss");
+    public void setReminderDate(Date date){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String mDate = df.format(date);
         String[] temp = mDate.split(" ");
-        this.reminderDate.set(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), Integer.parseInt(temp[3]), Integer.parseInt(temp[4]), Integer.parseInt(temp[5]));
+        String[] t1 = temp[0].split("-");
+        String[] t2 = temp[1].split(":");
+        reminderDate.set(Integer.parseInt(t1[0]), Integer.parseInt(t1[1]), Integer.parseInt(t1[2]), Integer.parseInt(t2[0]), Integer.parseInt(t2[1]), Integer.parseInt(t2[2]));
     }
 
-    void setUUID(){
-        this.id = UUID.randomUUID();
+   public void setUUID(){
+        id = UUID.randomUUID();
     }
 
-    void setType(String type){
-        this.type = type;
+   public void setType(String type2){
+        type = type2;
     }
 
-    void setComplete(Boolean complete){
-        this.complete = complete;
+    public void setComplete(Boolean complete2){
+        complete = complete2;
     }
 
-    void setAll(String aTitle, String aClass, String descrip, Date d1, Date d2){
+    public void setAll(String aTitle, String aClass, String descrip, Date d1, Date d2){
+        Log.v("String", aTitle);
         setTitle(aTitle);
         setClassA(aClass);
         setDescription(descrip);
@@ -65,35 +74,35 @@ public class Assignments {
         setComplete(false);
     }
 
-    String getTitle(){
-        return this.title;
+    public String getTitle(){
+        return title;
     }
 
-    String getClassA(){
-        return this.classA;
+    public String getClassA(){
+        return classA;
     }
 
-    String getDescription(){
-        return this.description;
+    public String getDescription(){
+        return description;
     }
 
-    Calendar getDueDate(){
-        return this.dueDate;
+    public Calendar getDueDate(){
+        return dueDate;
     }
 
-    Calendar getReminderDate(){
-        return this.reminderDate;
+    public Calendar getReminderDate(){
+        return reminderDate;
     }
 
-    String getUUID(){
-        return this.id.toString();
+    public String getUUID(){
+        return id.toString();
     }
 
-    String getType(){
-        return this.type;
+    public String getType(){
+        return type;
     }
 
-    Boolean getComplete(){
-        return this.complete;
+    public Boolean getComplete(){
+        return complete;
     }
 }

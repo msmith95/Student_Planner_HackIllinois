@@ -109,10 +109,10 @@ public class EditAssignment extends ActionBarActivity {
             getSupportActionBar().setTitle("Add new assignment");
         }
 
-        dueDate.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_DATE);
+        /*dueDate.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_DATE);
         dueTime.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_TIME);
         reminderDate.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_DATE);
-        reminderTime.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_TIME);
+        reminderTime.setInputType(EditorInfo.TYPE_DATETIME_VARIATION_TIME);*/
 
         View.OnFocusChangeListener date = new View.OnFocusChangeListener() {
             @Override
@@ -122,7 +122,7 @@ public class EditAssignment extends ActionBarActivity {
                     year = d.get(Calendar.YEAR);
                     month = d.get(Calendar.MONTH);
                     day = d .get(Calendar.DAY_OF_MONTH);
-                    DatePickerDialog dpd = new DatePickerDialog(getApplicationContext(), new DatePickerDialog.OnDateSetListener() {
+                    DatePickerDialog dpd = new DatePickerDialog(EditAssignment.this, new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                          Calendar c = Calendar.getInstance();
@@ -158,7 +158,7 @@ public class EditAssignment extends ActionBarActivity {
                     int hour=0, minute=0;
                     hour = d.get(Calendar.HOUR_OF_DAY);
                     minute = d.get(Calendar.MINUTE);
-                    TimePickerDialog tp = new TimePickerDialog(getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
+                    TimePickerDialog tp = new TimePickerDialog(EditAssignment.this, new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                             Calendar c = Calendar.getInstance();
@@ -181,7 +181,8 @@ public class EditAssignment extends ActionBarActivity {
 
                             ll.requestFocus();
                         }
-                    }, hour, minute, false);
+                    }, hour, minute, true);
+                    tp.show();
                 }
             }
         };
@@ -194,7 +195,7 @@ public class EditAssignment extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_view_assignment, menu);
+        getMenuInflater().inflate(R.menu.menu_edit_assignment, menu);
         return true;
     }
 
@@ -204,7 +205,7 @@ public class EditAssignment extends ActionBarActivity {
             // 0 means coming from view assignment 1 means from assignment fragment
             if(orNew == 0) {
                 temp = new Assignments();
-                temp.setAll(title.getText().toString(), classes.toString(), description.getText().toString(), due.getTime(), reminder.getTime());
+                temp.setAll(title.getText().toString(), classes.getSelectedItem().toString(), description.getText().toString(), due.getTime(), reminder.getTime());
                 SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
 
@@ -215,14 +216,16 @@ public class EditAssignment extends ActionBarActivity {
                 Intent result = new Intent();
                 result.putExtra("result", 1);
                 setResult(Activity.RESULT_OK, result);
+                finish();
             }else{
                 temp = new Assignments();
-                temp.setAll(title.getText().toString(), classes.toString(), description.getText().toString(), due.getTime(), reminder.getTime());
+                temp.setAll(title.getText().toString(), classes.getSelectedItem().toString(), description.getText().toString(), due.getTime(), reminder.getTime());
                 Intent result = new Intent();
                 result.putExtra("result", 0);
                 push = new pushAssignmentTask();
                 push.execute();
                 setResult(Activity.RESULT_OK, result);
+                finish();
             }
 
 
@@ -240,7 +243,7 @@ public class EditAssignment extends ActionBarActivity {
             SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
             String user = prefs.getString("user", " ");
 
-            api = getResources().getString(R.string.register);
+            api = getResources().getString(R.string.upload);
             client = new DefaultHttpClient();
             post = new HttpPost(api);
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
@@ -249,8 +252,8 @@ public class EditAssignment extends ActionBarActivity {
             pairs.add(new BasicNameValuePair("title", temp.getTitle()));
             pairs.add(new BasicNameValuePair("class", temp.getClassA()));
             pairs.add(new BasicNameValuePair("description", temp.getDescription()));
-            pairs.add(new BasicNameValuePair("dueDate", temp.getDueDate().toString()));
-            pairs.add(new BasicNameValuePair("reminderDate", temp.getReminderDate().toString()));
+            pairs.add(new BasicNameValuePair("dueDate", temp.getDueDate().getTime().toString()));
+            pairs.add(new BasicNameValuePair("reminderDate", temp.getReminderDate().getTime().toString()));
             pairs.add(new BasicNameValuePair("id", temp.getUUID()));
 
             try {

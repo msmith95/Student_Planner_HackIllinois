@@ -45,8 +45,8 @@ public class AssignmentAdapter extends ArrayAdapter<Assignments> {
         String dayOfWeek = new DateFormatSymbols().getShortWeekdays()[day];
         String month = new DateFormatSymbols().getShortMonths()[m];
         dueDate.setText(dayOfWeek + " " + month + " " + d);
-        classTitle.setText(assignments[position].getTitle());
-        type.setText(assignments[position].getType());
+        classTitle.setText(assignments[position].getClassA());
+        //type.setText(assignments[position].getType());
         if(assignments[position].getComplete()){
             title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             dueDate.setPaintFlags(dueDate.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
