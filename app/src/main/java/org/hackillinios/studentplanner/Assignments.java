@@ -55,11 +55,10 @@ public class Assignments {
         this.complete = complete;
     }
 
-    void setAll(String aTitle, String aClass, String descrip, String type, Date d1, Date d2){
+    void setAll(String aTitle, String aClass, String descrip, Date d1, Date d2){
         setTitle(aTitle);
         setClassA(aClass);
         setDescription(descrip);
-        setType(type);
         setDueDate(d1);
         setReminderDate(d2);
         setUUID();

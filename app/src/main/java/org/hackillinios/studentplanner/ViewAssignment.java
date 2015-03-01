@@ -26,7 +26,7 @@ public class ViewAssignment extends ActionBarActivity {
     Button complete;
     CheckBox is_complete;
     Assignments assignment;
-    String tOD;
+    String tOD, dDate, dTime, rDate, rTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,19 +82,23 @@ public class ViewAssignment extends ActionBarActivity {
         tOD = new DateFormatSymbols().getAmPmStrings()[am_pm];
         String month = new DateFormatSymbols().getShortMonths()[m];
         String time = hour + ":" + min + " " + tOD;
+        dDate = month + " " + d;
+        dTime = time;
         dueDate.setText("Assignment due: " + dayOfWeek + " " + month + " " + d + " at " + time);
 
         c = assignment.getReminderDate();
-         m = c.get(Calendar.MONTH);
-         d = c.get(Calendar.DAY_OF_MONTH);
-         dw = c.get(Calendar.DAY_OF_WEEK);
-         hour = c.get(Calendar.HOUR);
-         min = c.get(Calendar.MINUTE);
-         am_pm = c.get(Calendar.AM_PM);
-         dayOfWeek = new DateFormatSymbols().getShortWeekdays()[dw];
-         tOD = new DateFormatSymbols().getAmPmStrings()[am_pm];
-         month = new DateFormatSymbols().getShortMonths()[m];
-         time = hour + ":" + min + " " + tOD;
+        m = c.get(Calendar.MONTH);
+        d = c.get(Calendar.DAY_OF_MONTH);
+        dw = c.get(Calendar.DAY_OF_WEEK);
+        hour = c.get(Calendar.HOUR);
+        min = c.get(Calendar.MINUTE);
+        am_pm = c.get(Calendar.AM_PM);
+        dayOfWeek = new DateFormatSymbols().getShortWeekdays()[dw];
+        tOD = new DateFormatSymbols().getAmPmStrings()[am_pm];
+        month = new DateFormatSymbols().getShortMonths()[m];
+        time = hour + ":" + min + " " + tOD;
+        rDate =  month + " " + d;
+        rTime = time;
         reminderDate.setText("Assignment due: " + dayOfWeek + " " + month + " " + d + " at " + time);
 
     }
@@ -109,8 +113,61 @@ public class ViewAssignment extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
        if(item.getItemId() == R.id.action_edit){
            Intent i = new Intent(this, EditAssignment.class);
+           Bundle bun = new Bundle();
+           bun.putString("dDate", dDate);
+           bun.putString("dTime", dTime);
+           bun.putString("rDate", rDate);
+           bun.putString("rTime", rTime);
+           i.putExtras(bun);
            startActivity(i);
        }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        final SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
+        String json = prefs.getString("assignment", "No Assignment");
+        Gson gson = new Gson();
+        assignment = gson.fromJson(json, Assignments.class);
+
+        if(assignment.getComplete()){
+            complete.setVisibility(View.INVISIBLE);
+            is_complete.setVisibility(View.VISIBLE);
+            is_complete.setChecked(true);
+        }
+        title.setText(assignment.getTitle());
+        classA.setText(assignment.getClassA());
+        description.setText(assignment.getDescription());
+
+        Calendar c = assignment.getDueDate();
+        int m = c.get(Calendar.MONTH);
+        int d = c.get(Calendar.DAY_OF_MONTH);
+        int dw = c.get(Calendar.DAY_OF_WEEK);
+        int hour = c.get(Calendar.HOUR);
+        int min = c.get(Calendar.MINUTE);
+        int am_pm = c.get(Calendar.AM_PM);
+        String dayOfWeek = new DateFormatSymbols().getShortWeekdays()[dw];
+        tOD = new DateFormatSymbols().getAmPmStrings()[am_pm];
+        String month = new DateFormatSymbols().getShortMonths()[m];
+        String time = hour + ":" + min + " " + tOD;
+        dDate = month + " " + d;
+        dTime = time;
+        dueDate.setText("Assignment due: " + dayOfWeek + " " + month + " " + d + " at " + time);
+
+        c = assignment.getReminderDate();
+        m = c.get(Calendar.MONTH);
+        d = c.get(Calendar.DAY_OF_MONTH);
+        dw = c.get(Calendar.DAY_OF_WEEK);
+        hour = c.get(Calendar.HOUR);
+        min = c.get(Calendar.MINUTE);
+        am_pm = c.get(Calendar.AM_PM);
+        dayOfWeek = new DateFormatSymbols().getShortWeekdays()[dw];
+        tOD = new DateFormatSymbols().getAmPmStrings()[am_pm];
+        month = new DateFormatSymbols().getShortMonths()[m];
+        time = hour + ":" + min + " " + tOD;
+        rDate =  month + " " + d;
+        rTime = time;
+        reminderDate.setText("Assignment due: " + dayOfWeek + " " + month + " " + d + " at " + time);
     }
 }

@@ -139,7 +139,7 @@ public class AssignmentFragment extends android.app.Fragment {
                 }
                 DateFormat df = new SimpleDateFormat("yyyy MM dd HH mm ss");
                 try {
-                    tempA.setAll(json2.getString("title"), json2.getString("class"), json2.getString("description"), json2.getString("type"), df.parse(json2.getString("dueDate")), df.parse("reminderDate"));
+                    tempA.setAll(json2.getString("title"), json2.getString("class"), json2.getString("description"), df.parse(json2.getString("dueDate")), df.parse("reminderDate"));
                 } catch (JSONException | ParseException e) {
                     e.printStackTrace();
                 }
