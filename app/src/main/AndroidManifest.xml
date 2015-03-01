@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.hackillinios.studentplanner" >
 
+    <uses-permission android:name="android.permission.INTERNET">
+
+    </uses-permission>
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -15,6 +19,19 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".EditAssignment"
+            android:label = "Edit Assignments" >
+            </activity>
+
+        <activity android:name=".HomeworkList">
+
+        </activity>
+
+        <activity android:name=".ViewAssignment"
+            android:parentActivityName="org.hackillinios.studentplanner.HomeworkList">
+
         </activity>
     </application>
 

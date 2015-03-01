@@ -6,12 +6,16 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,8 +24,23 @@ import android.widget.TimePicker;
 
 import com.google.gson.Gson;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by Michael Smith on 2/28/2015.
@@ -31,10 +50,17 @@ public class EditAssignment extends ActionBarActivity {
     EditText title, dueDate, dueTime, reminderDate, reminderTime, description;
     Spinner classes;
     Bundle args;
-    int month, day, year, orNew;
-    String tOD;
+    int month, day, year, orNew, success;
+    String tOD, api, rText;
     LinearLayout ll;
     Calendar due, reminder;
+    HttpClient client;
+    HttpPost post;
+    HttpResponse response;
+    JSONObject json;
+    Assignments temp;
+    private pushAssignmentTask push;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +87,13 @@ public class EditAssignment extends ActionBarActivity {
         SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
         String json = prefs.getString("assignment", "");
         orNew = prefs.getInt("orNew", 0);
+        //String tmp = prefs.getString("classes", "");
+
+        String[] temp = {"CS 2050", "IT 2610", "MATH 1700", "IT 2810"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, temp);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        classes.setAdapter(adapter);
+
         if(orNew == 0) {
             Gson g = new Gson();
             Assignments assign = g.fromJson(json, Assignments.class);
@@ -85,6 +118,10 @@ public class EditAssignment extends ActionBarActivity {
             @Override
             public void onFocusChange(final View v, boolean hasFocus) {
                 if(hasFocus){
+                    Calendar d = Calendar.getInstance();
+                    year = d.get(Calendar.YEAR);
+                    month = d.get(Calendar.MONTH);
+                    day = d .get(Calendar.DAY_OF_MONTH);
                     DatePickerDialog dpd = new DatePickerDialog(getApplicationContext(), new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -117,7 +154,10 @@ public class EditAssignment extends ActionBarActivity {
             @Override
             public void onFocusChange(final View v, boolean hasFocus) {
                 if(hasFocus){
+                    Calendar d = Calendar.getInstance();
                     int hour=0, minute=0;
+                    hour = d.get(Calendar.HOUR_OF_DAY);
+                    minute = d.get(Calendar.MINUTE);
                     TimePickerDialog tp = new TimePickerDialog(getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -163,7 +203,7 @@ public class EditAssignment extends ActionBarActivity {
         if(item.getItemId() == R.id.action_save){
             // 0 means coming from view assignment 1 means from assignment fragment
             if(orNew == 0) {
-                Assignments temp = new Assignments();
+                temp = new Assignments();
                 temp.setAll(title.getText().toString(), classes.toString(), description.getText().toString(), due.getTime(), reminder.getTime());
                 SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
@@ -176,14 +216,84 @@ public class EditAssignment extends ActionBarActivity {
                 result.putExtra("result", 1);
                 setResult(Activity.RESULT_OK, result);
             }else{
+                temp = new Assignments();
+                temp.setAll(title.getText().toString(), classes.toString(), description.getText().toString(), due.getTime(), reminder.getTime());
                 Intent result = new Intent();
                 result.putExtra("result", 0);
-                //TODO: Add call to upload assignment
+                push = new pushAssignmentTask();
+                push.execute();
                 setResult(Activity.RESULT_OK, result);
             }
 
-            finish();
+
         }
        return true;
+    }
+
+    public class pushAssignmentTask extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+            SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
+            String user = prefs.getString("user", " ");
+
+            api = getResources().getString(R.string.register);
+            client = new DefaultHttpClient();
+            post = new HttpPost(api);
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+            pairs.add(new BasicNameValuePair("user", user));
+            pairs.add(new BasicNameValuePair("title", temp.getTitle()));
+            pairs.add(new BasicNameValuePair("class", temp.getClassA()));
+            pairs.add(new BasicNameValuePair("description", temp.getDescription()));
+            pairs.add(new BasicNameValuePair("dueDate", temp.getDueDate().toString()));
+            pairs.add(new BasicNameValuePair("reminderDate", temp.getReminderDate().toString()));
+            pairs.add(new BasicNameValuePair("id", temp.getUUID()));
+
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                response = client.execute(post);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                rText = EntityUtils.toString(response.getEntity());
+                rText = Html.fromHtml(rText).toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                json = new JSONObject(rText);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                success = json.getInt("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(success == 1){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if(aBoolean){
+                finish();
+            }
+        }
     }
 }

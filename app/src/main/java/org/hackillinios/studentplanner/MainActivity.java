@@ -1,7 +1,9 @@
 package org.hackillinios.studentplanner;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
@@ -150,6 +152,10 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean aBoolean) {
             dialog.dismiss();
             if(aBoolean){
+                SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("user", email.getText().toString());
+                editor.commit();
                 Intent i = new Intent(MainActivity.this, HomeworkList.class);
                 startActivity(i);
             }else{
@@ -180,7 +186,7 @@ public class MainActivity extends ActionBarActivity {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
             pairs.add(new BasicNameValuePair("email", mEmail));
-            pairs.add(new BasicNameValuePair("pass", mPassword));
+            pairs.add(new BasicNameValuePair("password", mPassword));
 
             try {
                 post.setEntity(new UrlEncodedFormEntity(pairs));
@@ -227,6 +233,11 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(Boolean aBoolean) {
             dialog.dismiss();
             if(aBoolean){
+                SharedPreferences prefs = getSharedPreferences("user_data", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("user", email.getText().toString());
+                editor.commit();
+
                 Intent i = new Intent(MainActivity.this, HomeworkList.class);
                 startActivity(i);
             }else{
